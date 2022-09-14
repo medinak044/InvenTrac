@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using InvenTrac.Helpers;
 using InvenTrac.Models;
 using InvenTrac.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -27,7 +28,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Login()
     {
         var model = new LoginVM();
-        return View(model);
+        return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).ControllerName());
     }
 
     [HttpPost]
