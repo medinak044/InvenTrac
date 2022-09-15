@@ -1,8 +1,51 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<AppUser> SignInManager
+
+@{
     ViewData["Title"] = "Home Page";
 }
+<style>
+    body {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(255, 255, 255, 0.15)), url('https://images.unsplash.com/photo-1580927942266-81d0519eb7be?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxMjA3fDB8MXxzZWFyY2h8M3x8cGFudHJ5fHwwfHx8&ixlib=rb-1.2.1&q=80&w=1080');
+        background-size: cover;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    h1, btn {
+        color: white;
+        text-shadow: 2px 2px 20px #000000;
+    }
+</style>
+
+
+<body>
+    <div @* style="
+             height: 100%;
+             width: 100%;
+             background:url('https://drive.google.com/uc?export=view&id=1clyxf9ViARad93Oo-ytndeP_QBZByVLn');
+             background-position: top;
+             background-size: cover;
+             background-repeat: no-repeat;"
+         *@>
+        <div class="d-flex h-100 text-center text-bg-dark" style="margin-top: 19rem; margin-bottom: 0rem;">
+            <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+                <main class="px-3">
+                    <h1>A simple inventory management solution for your needs!</h1>
+                    @*<p class="lead"></p>*@
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <p class="lead">
+                            <a class="btn btn-lg btn-primary fw-bold" asp-area="" asp-controller="User" asp-action="Profile">View profile</a>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="lead">
+                            <a class="btn btn-lg btn-primary fw-bold" asp-area="" asp-controller="Account" asp-action="Login">Get started now</a>
+                        </p>
+                    }
+                </main>
+            </div>
+        </div>
+    </div>
+</body>

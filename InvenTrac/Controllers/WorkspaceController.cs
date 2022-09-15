@@ -7,14 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InvenTrac.Controllers;
 
-public class AccountController : Controller
+public class WorkspaceController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IMapper _mapper;
 
-    public AccountController(
+    public WorkspaceController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
         RoleManager<IdentityRole> roleManager, 
@@ -28,45 +28,13 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Login()
+    public async Task<IActionResult> WorkspaceDashboard()
     {
+        // Display list of dashboard cards
+
         var model = new LoginVM();
         return View(model);
     }
-
-    #region Demo Login
-    [HttpGet("DemoLogin/{email}")]
-    public async Task<IActionResult> DemoLogin(string email)
-    {
-        string password = "Password!23";
-
-        // Check if user exists
-        var existingUser = await _userManager.FindByEmailAsync(email);
-        if (existingUser == null)
-        {
-            TempData["error"] = "Email doesn't exist";
-            return View(new LoginVM());
-        }
-
-        // Verify password
-        var passwordIsCorrect = await _userManager.CheckPasswordAsync(existingUser, password);
-        if (!passwordIsCorrect)
-        {
-            TempData["error"] = "Invalid credentials";
-            return View(new LoginVM());
-        }
-
-        // Log user in
-        var signInResult = await _signInManager.PasswordSignInAsync(existingUser, password, false, false);
-        if (!signInResult.Succeeded)
-        {
-            TempData["error"] = "Invalid credentials";
-            return View(new LoginVM());
-        }
-
-        return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).ControllerName());
-    } 
-    #endregion
 
     [HttpPost]
     public async Task<IActionResult> Login(LoginVM loginVM)
