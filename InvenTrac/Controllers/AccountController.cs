@@ -130,6 +130,13 @@ public class AccountController : Controller
         return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).ControllerName());
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).ControllerName());
+    }
+
     [HttpGet("Default")]
     public async Task<ActionResult> Default()
     {
