@@ -11,16 +11,19 @@ public class AccountController : Controller
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly SignInManager<AppUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IMapper _mapper;
 
     public AccountController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
+        RoleManager<IdentityRole> roleManager, 
         IMapper mapper
     )
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleManager;
         _mapper = mapper;
     }
 
@@ -35,11 +38,13 @@ public class AccountController : Controller
     [HttpGet("Login/{email}")]
     public async Task<IActionResult> Login(string email)
     {
-        var model = new LoginVM()
+        var model = new LoginVM
         {
             Email = email,
             Password = "Password!23" // Default demo user password
         };
+        model.Email = email;
+        model.Password = "Password!23";
         return View(model);
     } 
     #endregion
@@ -75,11 +80,9 @@ public class AccountController : Controller
         }
 
         //return RedirectToAction("Index", "Home");
-        return RedirectToAction(nameof(HomeController.Index));
+        return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).ControllerName());
 
     }
-
-
 
     [HttpGet]
     public async Task<IActionResult> SignUp()
@@ -126,4 +129,64 @@ public class AccountController : Controller
 
         return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).ControllerName());
     }
+
+    [HttpGet("Default")]
+    public async Task<ActionResult> Default()
+    {
+        #region Account Roles (Identity framework)
+        var accountRoleNames = new List<string>();
+
+        if (await _roleManager.FindByNameAsync("AppUser") == null)
+        {
+            accountRoleNames.Add("AppUser");
+        }
+        if (await _roleManager.FindByNameAsync("Admin") == null)
+        {
+            accountRoleNames.Add("Admin");
+        }
+
+        foreach (var accountRoleName in accountRoleNames)
+        {
+            await _roleManager.CreateAsync(new IdentityRole(accountRoleName));
+        }
+        #endregion
+
+        #region AppUsers (Identity framework)
+        var demoIdentityPassword = "Password!23";
+
+        if (await _userManager.FindByEmailAsync("admin@example.com") == null)
+        {
+            var adminUser = new AppUser()
+            {
+                FirstName = "Admin_F",
+                LastName = "Admin_L",
+                UserName = "Admin_UserName",
+                Email = "admin@example.com",
+            };
+            await _userManager.CreateAsync(adminUser, demoIdentityPassword);
+            // After user is created, add role
+            var foundUser = await _userManager.FindByEmailAsync(adminUser.Email);
+            await _userManager.AddToRoleAsync(foundUser, "AppUser");
+            await _userManager.AddToRoleAsync(foundUser, "Admin");
+        }
+
+        if (await _userManager.FindByEmailAsync("appuser@example.com") == null)
+        {
+            var appUser = new AppUser()
+            {
+                FirstName = "AppUser_F",
+                LastName = "AppUser_L",
+                UserName = "AppUser_UserName",
+                Email = "appuser@example.com",
+            };
+            await _userManager.CreateAsync(appUser, demoIdentityPassword);
+            // After user is created, add role
+            var foundUser = await _userManager.FindByEmailAsync(appUser.Email);
+            await _userManager.AddToRoleAsync(foundUser, "AppUser");
+        }
+        #endregion
+
+        return RedirectToAction(nameof(HomeController.Index), nameof(HomeController).ControllerName());
+    }
+
 }
