@@ -3,6 +3,7 @@ using System;
 using InvenTrac.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InvenTrac.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220915233201_WorkspaceModels2")]
+    partial class WorkspaceModels2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -170,16 +172,11 @@ namespace InvenTrac.Migrations
                     b.Property<int>("GroupRoleId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MemberRoleId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AppUserId");
 
                     b.HasIndex("GroupId");
-
-                    b.HasIndex("MemberRoleId");
 
                     b.ToTable("Members");
                 });
@@ -192,11 +189,16 @@ namespace InvenTrac.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("MemberId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MemberId");
 
                     b.ToTable("MemberRoles");
                 });
@@ -385,15 +387,14 @@ namespace InvenTrac.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("InvenTrac.Models.MemberRole", "MemberRole")
-                        .WithMany()
-                        .HasForeignKey("MemberRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("AppUser");
+                });
 
-                    b.Navigation("MemberRole");
+            modelBuilder.Entity("InvenTrac.Models.MemberRole", b =>
+                {
+                    b.HasOne("InvenTrac.Models.Member", null)
+                        .WithMany("MemberRoles")
+                        .HasForeignKey("MemberId");
                 });
 
             modelBuilder.Entity("InvenTrac.Models.Workspace", b =>
@@ -461,6 +462,11 @@ namespace InvenTrac.Migrations
                     b.Navigation("ItemEntries");
 
                     b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("InvenTrac.Models.Member", b =>
+                {
+                    b.Navigation("MemberRoles");
                 });
 
             modelBuilder.Entity("InvenTrac.Models.Workspace", b =>
