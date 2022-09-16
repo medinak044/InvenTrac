@@ -13,7 +13,11 @@ public class UnitOfWork : IUnitOfWork
     }
 
     #region Repository instances
-    //public IItemRepository Items => new ItemRepository(_context);
+    public IGroupRepository Groups => new GroupRepository(_context);
+    public IItemEntryRepository ItemEntries => new ItemEntryRepository(_context);
+    public IMemberRepository Members => new MemberRepository(_context);
+    public IMemberRoleRepository MemberRoles => new MemberRoleRepository(_context);
+    public IWorkspaceRepository Workspaces => new WorkspaceRepository(_context);
     #endregion
 
     public async Task<bool> SaveAsync()

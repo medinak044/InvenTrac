@@ -3,5 +3,9 @@
 public interface IUnitOfWork
 {
     Task<bool> SaveAsync();
-    //IItemRepository Items { get; }
+    IGroupRepository Groups { get; }
+    IItemEntryRepository ItemEntries { get; }
+    IMemberRepository Members { get; }
+    IMemberRoleRepository MemberRoles { get; }
+    IWorkspaceRepository Workspaces { get; }
 }
